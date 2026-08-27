@@ -5,10 +5,12 @@ import com.jobtracker.app.techtag.TechTag;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -21,7 +23,7 @@ public class JobApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
@@ -52,9 +54,10 @@ public class JobApplication {
     @JoinTable(
             name = "job_application_tech_tag",
             joinColumns = @JoinColumn(name = "job_application_id"),
-            inverseJoinColumns = @JoinColumn(name = "tech_tags_id")
+            inverseJoinColumns = @JoinColumn(name = "tech_tag_id")
     )
-    private Set<TechTag> techTags =  new HashSet<TechTag>();
+    @BatchSize(size = 25)
+    private Set<TechTag> techTags =  new LinkedHashSet<>();
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();

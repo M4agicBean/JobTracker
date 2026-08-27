@@ -14,7 +14,7 @@ public class StatusHistory {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private ApplicationStatus oldStatus;
 
     @Enumerated(EnumType.STRING)

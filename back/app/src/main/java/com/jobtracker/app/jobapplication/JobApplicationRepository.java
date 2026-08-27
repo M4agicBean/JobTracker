@@ -10,7 +10,7 @@ import java.util.List;
 public interface JobApplicationRepository extends JpaRepository<JobApplication,Long> {
 
     @Override
-    @EntityGraph(attributePaths = {"company", "techTags"})
+    @EntityGraph(attributePaths = {"company"})
     Page<JobApplication> findAll(Pageable pageable);
 
     @EntityGraph(attributePaths = {"company", "techTags"})

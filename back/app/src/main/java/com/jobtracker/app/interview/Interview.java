@@ -23,7 +23,7 @@ public class Interview {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private InterviewType interviewType;
+    private InterviewType type;
 
     @Column(length = 2000)
     private String notes;
@@ -35,9 +35,9 @@ public class Interview {
 
     protected Interview() {}
 
-    public Interview(Instant scheduledAt, String notes, JobApplication application) {
+    public Interview(Instant scheduledAt, InterviewType type, JobApplication application) {
         this.scheduledAt = scheduledAt;
-        this.notes = notes;
+        this.type = type;
         this.application = application;
     }
 
