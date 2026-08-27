@@ -1,5 +1,6 @@
 package com.jobtracker.app;
 
+import com.jobtracker.app.common.NotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,5 +14,10 @@ public class HelloController {
     @GetMapping("/hello")
     public HelloResponse hello() {
         return new HelloResponse("Hello, JobTracker!");
+    }
+
+    @GetMapping("/kaboom")
+    public String boom() {
+        throw new NotFoundException("Application", 42);
     }
 }
