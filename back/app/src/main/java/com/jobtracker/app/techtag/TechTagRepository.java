@@ -12,18 +12,12 @@ public interface TechTagRepository extends JpaRepository<TechTag, Long> {
 
     Optional<TechTag> findByNameIgnoreCase(String name);
 
-    /** Projection interface - Spring builds the implementation from getter names. */
     interface TagUsage {
         Long getTagId();
         long getUsageCount();
     }
 
-    /**
-     * One grouped query for every count, rather than one count per tag.
-     * Native SQL because the association is unidirectional: TechTag holds no
-     * collection of applications for JPQL to join through.
-     * LEFT JOIN matters - an inner join would drop unused tags.
-     */
+
     @Query(value = """
             select t.id as tagId, count(jt.job_application_id) as usageCount
             from tech_tag t
@@ -32,7 +26,7 @@ public interface TechTagRepository extends JpaRepository<TechTag, Long> {
             """, nativeQuery = true)
     List<TagUsage> findUsageCounts();
 
-    /** The join-table FK blocks deleting a tag that is still attached. */
+
     @Modifying
     @Query(value = "delete from job_application_tech_tag where tech_tag_id = :tagId",
             nativeQuery = true)

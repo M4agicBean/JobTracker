@@ -15,7 +15,6 @@ public class TechTagService {
 
     private final TechTagRepository repository;
 
-    // Single constructor -> Spring injects it, no @Autowired needed.
     public TechTagService(TechTagRepository repository) {
         this.repository = repository;
     }
@@ -25,7 +24,8 @@ public class TechTagService {
         Map<Long, Long> counts = repository.findUsageCounts().stream()
                 .collect(Collectors.toMap(
                         TechTagRepository.TagUsage::getTagId,
-                        TechTagRepository.TagUsage::getUsageCount));
+                        TechTagRepository.TagUsage::getUsageCount)
+                );
 
         return repository.findAll(Sort.by("name")).stream()
                 .map(tag -> TechTagResponse.from(tag, counts.getOrDefault(tag.getId(), 0L)))
@@ -36,8 +36,6 @@ public class TechTagService {
     public TechTagResponse create(TechTagRequest request) {
         String name = request.name().trim();
 
-        // Check explicitly so the client gets a real message, instead of
-        // leaning on the unique constraint and a generic 409.
         repository.findByNameIgnoreCase(name).ifPresent(existing -> {
             throw new ConflictException("Tag '%s' already exists".formatted(name));
         });
@@ -47,22 +45,15 @@ public class TechTagService {
 
     @Transactional
     public void delete(Long id) {
-        TechTag tag = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Tech tag", id));
+        TechTag tag = repository.findById(id).orElseThrow(() -> new NotFoundException("Tech tag", id));
 
-        // Both statements in one transaction: either both happen or neither.
         repository.detachFromApplications(id);
         repository.delete(tag);
     }
 
-    /**
-     * Used by JobApplicationService. orElseGet, NOT orElse - orElse would
-     * evaluate the save() eagerly even when the tag was found.
-     */
     @Transactional
     public TechTag findOrCreate(String name) {
         String trimmed = name.trim();
-        return repository.findByNameIgnoreCase(trimmed)
-                .orElseGet(() -> repository.save(new TechTag(trimmed)));
+        return repository.findByNameIgnoreCase(trimmed).orElseGet(() -> repository.save(new TechTag(trimmed)));
     }
 }

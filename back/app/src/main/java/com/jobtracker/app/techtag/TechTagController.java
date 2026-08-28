@@ -22,7 +22,6 @@ public class TechTagController {
         return service.list();
     }
 
-    /** @Valid is what triggers validation. Without it the annotations do nothing. */
     @PostMapping
     public ResponseEntity<TechTagResponse> create(
             @Valid @RequestBody TechTagRequest request,
